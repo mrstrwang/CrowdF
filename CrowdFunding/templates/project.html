@@ -1,0 +1,265 @@
+{% extends 'BASE_PAGE.html' %}
+{% load static %}
+{% block custom_style %}
+    <style>
+#footer {
+padding: 15px 0;
+background: #fff;
+border-top: 1px solid #ddd;
+text-align: center;
+}
+#topcontrol {
+color: #fff;
+z-index: 99;
+width: 30px;
+height: 30px;
+font-size: 20px;
+background: #222;
+position: relative;
+right: 14px !important;
+bottom: 11px !important;
+border-radius: 3px !important;
+}
+
+#topcontrol:after {
+/*top: -2px;*/
+left: 8.5px;
+content: "\f106";
+position: absolute;
+text-align: center;
+font-family: FontAwesome;
+}
+
+#topcontrol:hover {
+color: #fff;
+background: #18ba9b;
+-webkit-transition: all 0.3s ease-in-out;
+-moz-transition: all 0.3s ease-in-out;
+-o-transition: all 0.3s ease-in-out;
+transition: all 0.3s ease-in-out;
+}
+.nav-tabs>li.active>a, .nav-tabs>li.active>a:focus, .nav-tabs>li.active>a:hover {
+border-bottom-color: #ddd;
+}
+.nav-tabs>li>a {
+border-radius: 0;
+}
+</style>
+{% endblock %}
+{% block bodyinfo %}
+    <div class="container theme-showcase" role="main">
+
+        <div class="container">
+            <div class="row clearfix">
+                <div class="col-md-12 column">
+                    <nav class="navbar navbar-default" role="navigation">
+                        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                            <ul class="nav navbar-nav">
+                                <li>
+                                    <a rel="nofollow" href="{% url 'index' %}"><i class="glyphicon glyphicon-home"></i> 众筹首页</a>
+                                </li>
+                                <li class="active">
+                                    <a rel="nofollow" href="{% url 'projects:project_list' %}"><i class="glyphicon glyphicon-th-large"></i> 众筹项目</a>
+                                </li>
+                                <li>
+                                    <a rel="nofollow" href="{% url 'projects:create_step' 0 %}"><i class="glyphicon glyphicon-edit"></i> 发起项目</a>
+                                </li>
+                                <li>
+                                    <a rel="nofollow" href="{% url 'users:user_crowdfunding' %}"><i class="glyphicon glyphicon-user"></i> 我的众筹</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </nav>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="container">
+            <div class="row clearfix">
+                <div class="col-md-12 column">
+                    <div class="jumbotron nofollow" style="    padding-top: 10px;">
+                        <h3>
+                            {{ project.name }}
+                        </h3>
+                        <div style="float:left;width:70%;">
+                            {{ project.desc }}
+                        </div>
+                        <div style="float:right;">
+                            <button type="button" id="interest" class="btn btn-default"><i style="color:#f60" class="glyphicon glyphicon-heart"></i> <span>{% if has_interest %}已关注{% else %}关注 {{ project.interest_nums }}{% endif %}</span></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row clearfix">
+                <div class="col-md-12 column">
+                    <div class="row clearfix">
+                        <div class="col-md-8 column">
+                            <img alt="140x140" width="740" src="{{ MEDIA_URL }}{{ project.image_first }}" />
+                            <img alt="140x140" width="740" src="{{ MEDIA_URL }}{{ project.image_detail }}" />
+
+                        </div>
+                        <div class="col-md-4 column">
+                            <div class="panel panel-default" style="border-radius: 0px;">
+                                <div class="panel-heading" style="background-color: #fff;border-color: #fff;">
+                                    <span class="label {% if project.status == 'success' or 'funding' %}label-success{% elif project.status == 'failed' %}label-danger{% endif %}"><i class="glyphicon glyphicon-tag"></i> {{ project.get_status_display }}</span>
+                                </div>
+                                <div class="panel-body">
+                                    <h3 >
+                                        已筹资金：￥{{ project.support_fund }}.00
+                                    </h3>
+                                    <p><span>目标金额 ： {{ project.target_fund }}.00</span><span style="float:right;">达成 ： {%  widthratio project.support_fund project.target_fund 100 %}%</span></p>
+                                    <div class="progress" style="height:10px; margin-bottom: 5px;">
+                                      <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: {% if project.support_fund > project.target_fund %}100%{% else %}{% widthratio project.support_fund project.target_fund 100 %}%{% endif %};"></div>
+                                    </div>
+                                    <p>剩余 {{ project.left_days }} 天</p>
+                                    <div>
+                                     <p><span>已有{{ project.support_nums }}人支持该项目</p>
+                                     <button {% if project.status == 'failed' %}disabled="disabled"{% endif %} type="button" class="btn  btn-warning btn-lg btn-block" data-toggle="modal" data-target="#myModal">立即支持</button>
+                                    </div>
+                                </div>
+                                <div class="panel-footer" style="    background-color: #fff;
+                                    border-top: 1px solid #ddd;
+                                    border-bottom-right-radius: 0px;
+                                    border-bottom-left-radius: 0px;">
+                                <div class="container-fluid">
+                                    <div class="row clearfix">
+                                        <div class="col-md-3 column" style="padding:0;">
+                                <img alt="140x140" src="{{ MEDIA_URL }}{{ project.company.image }}" data-holder-rendered="true" style="width: 80px; height: 80px;">
+                                </div>
+                                <div class="col-md-9 column">
+                                    <div class="">
+                                        <h4>
+                                            <b>{{ project.company.name }}</b> <span style="float:right;font-size:12px;" class="label label-success">已认证</span>
+                                        </h4>
+                                        <p style="font-size:12px">
+                                            {{ project.company.desc }}
+
+                                        </p>
+                                        <p style="font-size:12px">
+                                        客服电话:{{ project.company.mobile }}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                    {% for item in project_items %}
+					<div class="panel panel-default" style="border-radius: 0px;">
+						<div class="panel-heading">
+							<h3 >
+								￥{{ item.item_value }} <span style="float:right;font-size:12px;">{% if item.item_nums == 0 %}无限额，{{ item.support_nums }}位支持者{% else %}限额{{ item.item_nums }}位，剩余{{ item.item_nums }}位{% endif %}</span>
+							</h3>
+						</div>
+						<div class="panel-body">
+                            <p>配送费用：{% if item.item_freight == 0 %}包邮{% else %}{{ item.item_freight }}.00 元{% endif %}</p>
+                            <p>预计发放时间：项目筹款成功后的{{ item.item_send_day }}天内</p>
+                            <button {% if project.status == 'failed' %}disabled="disabled"{% endif %} type="button" class="btn  btn-warning btn-lg" onclick="window.location.href='{% url 'orders:pay_step1' item.id %}'">支持</button>
+                            <br><br>
+                            <p>{{ item.how_to_get }}</p>
+						</div>
+					</div>
+                    {% endfor %}
+					<div class=" panel panel-default" style="border-radius: 0px;">
+						<div class="panel-heading">
+							<h3 >
+								风险提示
+							</h3>
+						</div>
+						<div class="panel-body">
+                            <p>1.众筹并非商品交易，存在一定风险。支持者根据自己的判断选择、支持众筹项目，与发起人共同实现梦想并获得发起人承诺的回报。<br>
+2.众筹平台仅提供平台网络空间及技术支持等中介服务，众筹仅存在于发起人和支持者之间，使用众筹平台产生的法律后果由发起人与支持者自行承担。<br>
+3.本项目必须在{{ project.deadline_time|date:'Y-m-d' }}之前达到￥{{ project.target_fund }}.00 的目标才算成功，否则已经支持的订单将取消。订单取消或募集失败的，您支持的金额将原支付路径退回。<br>
+4.请在支持项目后15分钟内付款，否则您的支持请求会被自动关闭。<br>
+5.众筹成功后由发起人统一进行发货，售后服务由发起人统一提供；如果发生发起人无法发放回报、延迟发放回报、不提供回报后续服务等情况，您需要直接和发起人协商解决。<br>
+6.如您不同意上述风险提示内容，您有权选择不支持；一旦选择支持，视为您已确认并同意以上提示内容。</p>
+						</div>
+					</div>
+
+                    <div><h2>为你推荐</h2><hr></div>
+                        {% for project in recommend_list %}
+                            <div class="prjtip panel panel-default" style="border-radius: 0px;">
+                                <div class="panel-body">
+                                    <a href="{% url 'projects:project_detail' project.id %}"><img src="{{ MEDIA_URL }}{{ project.image_first }}" width="100%" height="100%"></a>
+                                </div>
+                            </div>
+                        {% endfor %}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+        <div class="container" style="margin-top:20px;">
+            <div class="row clearfix">
+                <div class="col-md-12 column">
+                    <div id="footer">
+                        <div class="footerNav">
+                             <a rel="nofollow" href="http://www.atguigu.com">关于我们</a> | <a rel="nofollow" href="http://www.atguigu.com">服务条款</a> | <a rel="nofollow" href="http://www.atguigu.com">免责声明</a> | <a rel="nofollow" href="http://www.atguigu.com">网站地图</a> | <a rel="nofollow" href="http://www.atguigu.com">联系我们</a>
+                        </div>
+                        <div class="copyRight">
+                            Copyright ?2010-2014atguigu.com 版权所有
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div> <!-- /container -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" >
+      <div class="modal-dialog "  style="width:960px;height:400px;" role="document">
+        <div class="modal-content" data-spy="scroll" data-target="#myScrollspy">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="myModalLabel">选择支持项</h4>
+          </div>
+          <div class="modal-body">
+<div class="container-fluid">
+	<div class="row clearfix">
+		<div class="col-sm-3 col-md-3 column" id="myScrollspy">
+            <ul class="nav nav-tabs nav-stacked">
+                {% for item in project_items %}
+                <li class="active"><a href="#section-{{ forloop.counter }}">￥{{ item.item_value }}</a></li>
+                {% endfor %}
+            </ul>
+		</div>
+		<div id="navList" class="col-sm-9 col-md-9 column" style="height:400px;overflow-y:auto;">
+            {% for item in project_items %}
+                <h2 id="section-{{ forloop.counter }}" style="border-bottom:1px dashed #ddd;" >
+                    <span style="font-size:20px;font-weight:bold;">￥{{ item.item_value }}</span>
+                    <span style="font-size:12px;margin-left:60px;">{% if item.item_nums == 0 %}无限额，{{ item.support_nums }}位支持者{% else %}限额{{ item.item_nums }}位，剩余{{ item.item_nums }}位{% endif %}</span></h2>
+                <p>配送费用：{% if item.item_freight == 0 %}包邮{% else %}{{ item.item_freight }}.00 元{% endif %}</p>
+                <p>预计发放时间：项目筹款成功后的{{ item.item_send_day }}天内</p>
+                <button {% if project.status == 'failed' %}disabled="disabled"{% endif %} type="button" class="btn  btn-warning btn-lg " onclick="window.location.href='{% url 'orders:pay_step1' item.id %}'">支持</button>
+                <br><br>
+                <p>{{ item.how_to_get }}</p>
+                <hr>
+            {% endfor %}
+            </div>
+        </div>
+	</div>
+</div>
+          </div>
+        </div>
+      </div>
+{% endblock bodyinfo %}
+{% block custom_script %}
+    <script>
+        $(".prjtip img").css("cursor", "pointer");
+        $('#interest').click(function () {
+            $.post('{% url "interest_manage" project.id %}', {'csrfmiddlewaretoken': '{{ csrf_token }}'}, function(data){
+                if (data.res == 0) {
+                    $('#interest span').text( ' 已关注 ' )
+                } else {
+                    $('#interest span').text( ' 关注 {{ project.interest_nums }} ' )
+                }
+            })
+        })
+	</script>
+{% endblock %}

@@ -1,0 +1,61 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <meta name="keys" content="">
+	<link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
+	<link rel="stylesheet" href="{% static 'css/font-awesome.min.css' %}">
+	<link rel="stylesheet" href="{% static 'css/carousel.css' %}">
+    <link rel="stylesheet" href="{% static 'css/theme.css' %}">
+    {% block custom_style %}
+    {% endblock %}
+</head>
+<body>
+    {% block navbar %}
+        <div class="navbar-wrapper">
+            <div class="container">
+                <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+                    <div class="container">
+                        <div class="navbar-header">
+                            <a class="navbar-brand" href="{% url 'index' %}" style="font-size:32px;margin-left: 90px">尚筹网-创意产品众筹平台</a>
+                        </div>
+                        <div id="navbar" class="navbar-collapse collapse" style="float:right;">
+                            {% if request.user.is_authenticated %}
+                                <ul class="nav navbar-nav" style="margin-right: 70px">
+                                    <li class="dropdown">
+                                        <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="glyphicon glyphicon-user"></i> {{ user.username }} <span class="caret"></span></a>
+                                        <ul class="dropdown-menu" role="menu">
+                                            <li><a href="{% url 'users:user_center' %}"><i class="glyphicon glyphicon-scale"></i> 会员中心</a></li>
+                                            <li><a href="#"><i class="glyphicon glyphicon-comment"></i> 消息</a></li>
+                                            <li class="divider"></li>
+                                            <li><a href="{% url 'users:logout' %}"><i class="glyphicon glyphicon-off"></i> 退出系统</a></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            {% else %}
+                                <ul class="nav navbar-nav navbar-right" style="margin-right: 40px">
+                                    <li><a href="{% url 'users:login' %}">登录</a></li>
+                                    <li><a href="{% url 'users:register' %}">注册</a></li>
+                                </ul>
+                            {% endif %}
+                        </div>
+                    </div>
+                </nav>
+            </div>
+        </div>
+    {% endblock %}
+    {% block bodyinfo %}
+    {% endblock bodyinfo %}
+    <script src="{% static 'jquery/jquery-2.1.1.min.js' %}"></script>
+    <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
+	<script src="{% static 'script/docs.min.js' %}"></script>
+    <script src="{% static 'script/back-to-top.js' %}"></script>
+    {% block custom_script %}
+    {% endblock %}
+</body>
+</html>
